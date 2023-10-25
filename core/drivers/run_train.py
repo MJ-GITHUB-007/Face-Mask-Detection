@@ -27,5 +27,5 @@ if live_plot in {'n', 'no'}:
 else:
     live_plot = True
  
-trainer = Train(batch_size=128, val_batch_size=64, learning_rate=1e-6, start_new=new_model, liveplot=live_plot)
+trainer = Train(batch_size=512, val_batch_size=128, learning_rate=1e-6, start_new=new_model, liveplot=live_plot)
 trainer.train(num_epochs=epochs)
