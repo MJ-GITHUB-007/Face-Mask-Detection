@@ -7,7 +7,7 @@ filterwarnings(action='ignore')
 
 import pretty_errors
 
-from main_dir.mask_script import Predict
+from container.engine import Predict
 
 image_path = input("\nPath of image to predict : ").strip()
 

@@ -7,7 +7,7 @@ filterwarnings(action='ignore')
 
 import pretty_errors
 
-from main_dir.mask_script import Train
+from container.engine import Train
 
 epochs = input("\nNumber of epochs to train : ").strip()
 try:

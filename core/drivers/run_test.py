@@ -7,7 +7,7 @@ filterwarnings(action='ignore')
 
 import pretty_errors
 
-from main_dir.mask_script import Test
+from container.engine import Test
 
 plot_matrix = input("\nDisplay Confusion Matrix? [Y/n] : ").strip().lower()
 if plot_matrix in {'n', 'no'}:
