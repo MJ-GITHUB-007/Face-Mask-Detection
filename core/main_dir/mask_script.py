@@ -5,7 +5,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
-from torchvision.models import resnet18
 
 from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
 from PIL import Image
@@ -14,16 +13,84 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pretty_errors
 
-# Function to create and return model
-def create_mask_detector_model(pretrained=False):
-    model = resnet18(weights=pretrained)
-    model.fc = nn.Sequential(
-        nn.Linear(in_features=512, out_features=32),
-        nn.ReLU(),
-        nn.Linear(in_features=32, out_features=1),
-        nn.Sigmoid()
-    )
-    return model
+class MaskDetector(nn.Module):
+    def __init__(self):
+        super(MaskDetector, self).__init__()
+
+        self.relu = nn.ReLU()
+        self.sigmoid = nn.Sigmoid()
+
+        self.conv1 = nn.Conv2d(
+            in_channels=3,
+            out_channels=32,
+            kernel_size=3,
+            stride=1
+        )
+        self.bn1 = nn.BatchNorm2d(num_features=32)
+        self.maxpool1 = nn.MaxPool2d(
+            kernel_size=2,
+            stride=1
+        )
+
+        self.conv2 = nn.Conv2d(
+            in_channels=32,
+            out_channels=64,
+            kernel_size=3,
+            stride=1
+        )
+        self.bn2 = nn.BatchNorm2d(num_features=64)
+        self.maxpool2 = nn.MaxPool2d(
+            kernel_size=2,
+            stride=2
+        )
+
+        self.conv3 = nn.Conv2d(
+            in_channels=64,
+            out_channels=128,
+            kernel_size=3,
+            stride=1
+        )
+        self.bn3 = nn.BatchNorm2d(num_features=128)
+        self.maxpool3 = nn.MaxPool2d(
+            kernel_size=4,
+            stride=4
+        )
+
+        self.fc1 = nn.Linear(
+            in_features=4608,
+            out_features=128
+        )
+
+        self.fc2 = nn.Linear(
+            in_features=128,
+            out_features=1
+        )
+
+    def forward(self, x):
+
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu(x)
+        x = self.maxpool1(x)
+
+        x = self.conv2(x)
+        x = self.bn2(x)
+        x = self.relu(x)
+        x = self.maxpool2(x)
+
+        x = self.conv3(x)
+        x = self.bn3(x)
+        x = self.relu(x)
+        x = self.maxpool3(x)
+        
+        x = torch.flatten(x, start_dim=1)
+
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        x = self.sigmoid(x)
+
+        return x
 
 class Train():
     def __init__(self, batch_size=32, val_batch_size=8, learning_rate=1e-3, start_new=True, liveplot=True) -> None:
@@ -58,10 +125,10 @@ class Train():
 
         # Define your PyTorch model (make sure it's designed to run on the specified device)
         if start_new:
-            self.model = create_mask_detector_model(pretrained=True).to(self.device)
+            self.model = MaskDetector().to(self.device)
             self.message = "new mask_detector"
         else:
-            self.model = create_mask_detector_model(pretrained=False).to(self.device)
+            self.model = MaskDetector().to(self.device)
             self.message = "existing mask_detector"
             try:
                 self.model.load_state_dict(torch.load(os.path.join(self.curr_path, 'models', 'mask_detector.pth'), map_location=self.device))
@@ -233,7 +300,7 @@ class Test():
         self.test_loader = DataLoader(self.test_dataset, batch_size=batch_size, shuffle=False, num_workers=1)
 
         # Define your PyTorch model (make sure it's designed to run on the specified device)
-        self.model = create_mask_detector_model(pretrained=False).to(self.device)
+        self.model = MaskDetector().to(self.device)
         try:
             self.model.load_state_dict(torch.load(os.path.join(self.curr_path, 'models', 'mask_detector.pth'), map_location=self.device))
         except:
@@ -310,7 +377,7 @@ class Predict():
             print(f"\nNo GPU available, using CPU.")
 
         # Define your PyTorch model (make sure it's designed to run on the specified device)
-        self.model = create_mask_detector_model(pretrained=False).to(self.device)
+        self.model = MaskDetector().to(self.device)
         try:
             self.model.load_state_dict(torch.load(os.path.join(self.curr_path, 'models', 'mask_detector.pth'), map_location=self.device))
         except:
