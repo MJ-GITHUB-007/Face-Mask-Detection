@@ -402,7 +402,7 @@ class Predict():
 
             if output < 0.5:
                 prediction = 'Absent'
-                confidence = str(round(1 - output*100, 4)) + '%'
+                confidence = str(round((1 - output)*100, 4)) + '%'
             else:
                 prediction = 'Present'
                 confidence = str(round(output*100, 4)) + '%'
