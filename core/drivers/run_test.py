@@ -15,5 +15,5 @@ if plot_matrix in {'n', 'no'}:
 else:
     plot_matrix = True
    
-tester = Test(batch_size=16)
+tester = Test(batch_size=64)
 tester.test(con_matrix=plot_matrix)
