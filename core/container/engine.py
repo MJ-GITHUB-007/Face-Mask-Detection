@@ -144,8 +144,8 @@ class Train():
         print(f"\nTraining {self.message} model for {num_epochs} epoch(s)...\n")
 
         # Initialize regularization strengths
-        l1_lambda = 0.01
-        l2_lambda = 0.01
+        l1_lambda = 1e-5
+        l2_lambda = 1e-5
 
         if self.display:
             fig, axes = plt.subplots(1, 2, figsize=(9, 5))
@@ -427,5 +427,7 @@ if __name__ == '__main__':
     tester.test()
 
     predictor = Predict()
-    image_path = 'data_small/test/Present/test-present-0.jpg'
+    image_path = 'data/test/WithMask/test-wm-1.png'
+    predictor.predict(image_path, display_image=True)
+    image_path = 'data/test/WithoutMask/test-wom-1.png'
     predictor.predict(image_path, display_image=True)
