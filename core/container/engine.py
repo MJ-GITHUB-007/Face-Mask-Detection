@@ -108,8 +108,8 @@ class Train():
             transforms.ToTensor(),
         ])
 
-        self.train_dataset = datasets.ImageFolder(root=os.path.join(self.curr_path, 'data', 'train'), transform=train_transform)
-        self.val_dataset = datasets.ImageFolder(root=os.path.join(self.curr_path, 'data', 'validation'), transform=val_transform)
+        self.train_dataset = datasets.ImageFolder(root=os.path.join(self.curr_path, 'data_small', 'train'), transform=train_transform)
+        self.val_dataset = datasets.ImageFolder(root=os.path.join(self.curr_path, 'data_small', 'validation'), transform=val_transform)
 
         print(f"\nFound {len(self.train_dataset)} images for training")
         print(f"Found {len(self.val_dataset)} images for validating")
@@ -287,7 +287,7 @@ class Test():
             transforms.ToTensor(),
         ])
 
-        self.test_dataset = datasets.ImageFolder(root=os.path.join(self.curr_path, 'data', 'test'), transform=test_transform)
+        self.test_dataset = datasets.ImageFolder(root=os.path.join(self.curr_path, 'data_small', 'test'), transform=test_transform)
 
         print(f"\nFound {len(self.test_dataset)} images for testing")
 
